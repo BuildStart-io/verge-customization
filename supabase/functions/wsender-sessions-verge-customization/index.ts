@@ -139,7 +139,11 @@ serve(async (req) => {
 
     // WAHA session name locked to the user — slug-safe, deterministic, fits within ~25 chars.
     const sessionName = `u_${userId.replace(/-/g, "").substring(0, 20)}`;
-    const webhookUrl = Deno.env.get("WEBHOOK_URL_OVERRIDE") || `${supabaseUrl}/functions/v1/webhook-wsender-verge-customization`;
+    let override = Deno.env.get("WEBHOOK_URL_OVERRIDE");
+    if (override && !override.includes("-verge-customization")) {
+      override = override.replace("webhook-wsender", "webhook-wsender-verge-customization");
+    }
+    const webhookUrl = override || `${supabaseUrl}/functions/v1/webhook-wsender-verge-customization`;
 
     // Helper: store/update mapping in user_wsender_sessions
     const upsertMapping = async (displayName?: string) => {

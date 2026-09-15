@@ -20,7 +20,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
+-- Name: verge_customization; Type: SCHEMA; Schema: -; Owner: -
 --
 
 CREATE SCHEMA verge_customization;
@@ -30,11 +30,11 @@ CREATE SCHEMA verge_customization;
 -- Name: SCHEMA verge_customization; Type: COMMENT; Schema: -; Owner: -
 --
 
-COMMENT ON SCHEMA verge_customization IS 'standard public schema';
+COMMENT ON SCHEMA verge_customization IS 'standard verge_customization schema';
 
 
 --
--- Name: app_role; Type: TYPE; Schema: public; Owner: -
+-- Name: app_role; Type: TYPE; Schema: verge_customization; Owner: -
 --
 
 CREATE TYPE verge_customization.app_role AS ENUM (
@@ -44,7 +44,7 @@ CREATE TYPE verge_customization.app_role AS ENUM (
 
 
 --
--- Name: plan_tier; Type: TYPE; Schema: public; Owner: -
+-- Name: plan_tier; Type: TYPE; Schema: verge_customization; Owner: -
 --
 
 CREATE TYPE verge_customization.plan_tier AS ENUM (
@@ -55,12 +55,12 @@ CREATE TYPE verge_customization.plan_tier AS ENUM (
 
 
 --
--- Name: can_read_usage(uuid); Type: FUNCTION; Schema: public; Owner: -
+-- Name: can_read_usage(uuid); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.can_read_usage(_user_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
   SELECT auth.uid() IS NULL
       OR auth.uid() = _user_id
@@ -70,12 +70,12 @@ $$;
 
 
 --
--- Name: enforce_order_limit(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: enforce_order_limit(); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.enforce_order_limit() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
 DECLARE
   current_count INT;
@@ -138,12 +138,12 @@ $$;
 
 
 --
--- Name: get_ai_message_usage(uuid, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: -
+-- Name: get_ai_message_usage(uuid, timestamp with time zone); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.get_ai_message_usage(_user_id uuid, _since timestamp with time zone) RETURNS integer
     LANGUAGE plpgsql STABLE SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
 DECLARE c integer;
 BEGIN
@@ -159,12 +159,12 @@ $$;
 
 
 --
--- Name: get_contact_usage(uuid, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: -
+-- Name: get_contact_usage(uuid, timestamp with time zone); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.get_contact_usage(_user_id uuid, _since timestamp with time zone) RETURNS integer
     LANGUAGE plpgsql STABLE SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
 DECLARE c integer;
 BEGIN
@@ -180,12 +180,12 @@ $$;
 
 
 --
--- Name: get_staff_owner_id(uuid); Type: FUNCTION; Schema: public; Owner: -
+-- Name: get_staff_owner_id(uuid); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.get_staff_owner_id(_user_id uuid) RETURNS uuid
     LANGUAGE sql STABLE SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
   SELECT owner_id FROM verge_customization.staff_accounts
   WHERE staff_user_id = _user_id AND is_active = true
@@ -194,12 +194,12 @@ $$;
 
 
 --
--- Name: handle_new_user(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: handle_new_user(); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.handle_new_user() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
 BEGIN
   INSERT INTO verge_customization.profiles (user_id, email, full_name)
@@ -210,12 +210,12 @@ $$;
 
 
 --
--- Name: handle_new_user_role(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: handle_new_user_role(); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.handle_new_user_role() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
 BEGIN
   INSERT INTO verge_customization.user_roles (user_id, role)
@@ -226,12 +226,12 @@ $$;
 
 
 --
--- Name: handle_new_user_settings(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: handle_new_user_settings(); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.handle_new_user_settings() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
 BEGIN
   INSERT INTO verge_customization.settings (user_id, key, value) VALUES
@@ -244,12 +244,12 @@ $$;
 
 
 --
--- Name: has_role(uuid, verge_customization.app_role); Type: FUNCTION; Schema: public; Owner: -
+-- Name: has_role(uuid, verge_customization.app_role); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.has_role(_user_id uuid, _role verge_customization.app_role) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
   SELECT EXISTS (
     SELECT 1 FROM verge_customization.user_roles
@@ -259,12 +259,12 @@ $$;
 
 
 --
--- Name: is_admin(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: is_admin(); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.is_admin() RETURNS boolean
     LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
 BEGIN
   RETURN EXISTS (
@@ -276,12 +276,12 @@ $$;
 
 
 --
--- Name: is_staff_of(uuid, uuid); Type: FUNCTION; Schema: public; Owner: -
+-- Name: is_staff_of(uuid, uuid); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.is_staff_of(_staff_user_id uuid, _owner_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
   SELECT EXISTS (
     SELECT 1 FROM verge_customization.staff_accounts
@@ -293,12 +293,12 @@ $$;
 
 
 --
--- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: -
+-- Name: update_updated_at_column(); Type: FUNCTION; Schema: verge_customization; Owner: -
 --
 
 CREATE FUNCTION verge_customization.update_updated_at_column() RETURNS trigger
     LANGUAGE plpgsql
-    SET search_path TO 'public'
+    SET search_path TO 'verge_customization'
     AS $$
 BEGIN
   NEW.updated_at = now();
@@ -312,7 +312,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: ai_usage_logs; Type: TABLE; Schema: public; Owner: -
+-- Name: ai_usage_logs; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.ai_usage_logs (
@@ -324,7 +324,7 @@ CREATE TABLE verge_customization.ai_usage_logs (
 
 
 --
--- Name: chat_takeovers; Type: TABLE; Schema: public; Owner: -
+-- Name: chat_takeovers; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.chat_takeovers (
@@ -338,7 +338,7 @@ CREATE TABLE verge_customization.chat_takeovers (
 
 
 --
--- Name: contact_usage; Type: TABLE; Schema: public; Owner: -
+-- Name: contact_usage; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.contact_usage (
@@ -351,7 +351,7 @@ CREATE TABLE verge_customization.contact_usage (
 
 
 --
--- Name: conversations; Type: TABLE; Schema: public; Owner: -
+-- Name: conversations; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.conversations (
@@ -368,7 +368,7 @@ CREATE TABLE verge_customization.conversations (
 
 
 --
--- Name: faq_usage_logs; Type: TABLE; Schema: public; Owner: -
+-- Name: faq_usage_logs; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.faq_usage_logs (
@@ -382,7 +382,7 @@ CREATE TABLE verge_customization.faq_usage_logs (
 
 
 --
--- Name: faqs; Type: TABLE; Schema: public; Owner: -
+-- Name: faqs; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.faqs (
@@ -400,7 +400,7 @@ CREATE TABLE verge_customization.faqs (
 
 
 --
--- Name: fcm_tokens; Type: TABLE; Schema: public; Owner: -
+-- Name: fcm_tokens; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.fcm_tokens (
@@ -414,7 +414,7 @@ CREATE TABLE verge_customization.fcm_tokens (
 
 
 --
--- Name: leads; Type: TABLE; Schema: public; Owner: -
+-- Name: leads; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.leads (
@@ -430,7 +430,7 @@ CREATE TABLE verge_customization.leads (
 
 
 --
--- Name: message_queue; Type: TABLE; Schema: public; Owner: -
+-- Name: message_queue; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.message_queue (
@@ -455,7 +455,7 @@ CREATE TABLE verge_customization.message_queue (
 
 
 --
--- Name: orders; Type: TABLE; Schema: public; Owner: -
+-- Name: orders; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.orders (
@@ -479,7 +479,7 @@ CREATE TABLE verge_customization.orders (
 
 
 --
--- Name: platform_settings; Type: TABLE; Schema: public; Owner: -
+-- Name: platform_settings; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.platform_settings (
@@ -492,7 +492,7 @@ CREATE TABLE verge_customization.platform_settings (
 
 
 --
--- Name: products; Type: TABLE; Schema: public; Owner: -
+-- Name: products; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.products (
@@ -514,7 +514,7 @@ CREATE TABLE verge_customization.products (
 
 
 --
--- Name: profiles; Type: TABLE; Schema: public; Owner: -
+-- Name: profiles; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.profiles (
@@ -542,7 +542,7 @@ CREATE TABLE verge_customization.profiles (
 
 
 --
--- Name: settings; Type: TABLE; Schema: public; Owner: -
+-- Name: settings; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.settings (
@@ -556,7 +556,7 @@ CREATE TABLE verge_customization.settings (
 
 
 --
--- Name: staff_accounts; Type: TABLE; Schema: public; Owner: -
+-- Name: staff_accounts; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.staff_accounts (
@@ -574,7 +574,7 @@ CREATE TABLE verge_customization.staff_accounts (
 
 
 --
--- Name: user_roles; Type: TABLE; Schema: public; Owner: -
+-- Name: user_roles; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.user_roles (
@@ -586,7 +586,7 @@ CREATE TABLE verge_customization.user_roles (
 
 
 --
--- Name: user_wsender_sessions; Type: TABLE; Schema: public; Owner: -
+-- Name: user_wsender_sessions; Type: TABLE; Schema: verge_customization; Owner: -
 --
 
 CREATE TABLE verge_customization.user_wsender_sessions (
@@ -600,7 +600,7 @@ CREATE TABLE verge_customization.user_wsender_sessions (
 
 
 --
--- Name: ai_usage_logs ai_usage_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ai_usage_logs ai_usage_logs_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.ai_usage_logs
@@ -608,7 +608,7 @@ ALTER TABLE ONLY verge_customization.ai_usage_logs
 
 
 --
--- Name: chat_takeovers chat_takeovers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: chat_takeovers chat_takeovers_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.chat_takeovers
@@ -616,7 +616,7 @@ ALTER TABLE ONLY verge_customization.chat_takeovers
 
 
 --
--- Name: chat_takeovers chat_takeovers_user_id_phone_number_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: chat_takeovers chat_takeovers_user_id_phone_number_key; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.chat_takeovers
@@ -624,7 +624,7 @@ ALTER TABLE ONLY verge_customization.chat_takeovers
 
 
 --
--- Name: contact_usage contact_usage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: contact_usage contact_usage_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.contact_usage
@@ -632,7 +632,7 @@ ALTER TABLE ONLY verge_customization.contact_usage
 
 
 --
--- Name: conversations conversations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: conversations conversations_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.conversations
@@ -640,7 +640,7 @@ ALTER TABLE ONLY verge_customization.conversations
 
 
 --
--- Name: faq_usage_logs faq_usage_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: faq_usage_logs faq_usage_logs_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.faq_usage_logs
@@ -648,7 +648,7 @@ ALTER TABLE ONLY verge_customization.faq_usage_logs
 
 
 --
--- Name: faqs faqs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: faqs faqs_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.faqs
@@ -656,7 +656,7 @@ ALTER TABLE ONLY verge_customization.faqs
 
 
 --
--- Name: fcm_tokens fcm_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: fcm_tokens fcm_tokens_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.fcm_tokens
@@ -664,7 +664,7 @@ ALTER TABLE ONLY verge_customization.fcm_tokens
 
 
 --
--- Name: fcm_tokens fcm_tokens_user_id_device_token_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: fcm_tokens fcm_tokens_user_id_device_token_key; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.fcm_tokens
@@ -672,7 +672,7 @@ ALTER TABLE ONLY verge_customization.fcm_tokens
 
 
 --
--- Name: leads leads_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: leads leads_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.leads
@@ -680,7 +680,7 @@ ALTER TABLE ONLY verge_customization.leads
 
 
 --
--- Name: leads leads_user_id_phone_number_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: leads leads_user_id_phone_number_key; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.leads
@@ -688,7 +688,7 @@ ALTER TABLE ONLY verge_customization.leads
 
 
 --
--- Name: message_queue message_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: message_queue message_queue_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.message_queue
@@ -696,7 +696,7 @@ ALTER TABLE ONLY verge_customization.message_queue
 
 
 --
--- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders orders_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.orders
@@ -704,7 +704,7 @@ ALTER TABLE ONLY verge_customization.orders
 
 
 --
--- Name: platform_settings platform_settings_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: platform_settings platform_settings_key_key; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.platform_settings
@@ -712,7 +712,7 @@ ALTER TABLE ONLY verge_customization.platform_settings
 
 
 --
--- Name: platform_settings platform_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: platform_settings platform_settings_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.platform_settings
@@ -720,7 +720,7 @@ ALTER TABLE ONLY verge_customization.platform_settings
 
 
 --
--- Name: products products_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: products products_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.products
@@ -728,7 +728,7 @@ ALTER TABLE ONLY verge_customization.products
 
 
 --
--- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.profiles
@@ -736,7 +736,7 @@ ALTER TABLE ONLY verge_customization.profiles
 
 
 --
--- Name: profiles profiles_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: profiles profiles_user_id_key; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.profiles
@@ -744,7 +744,7 @@ ALTER TABLE ONLY verge_customization.profiles
 
 
 --
--- Name: settings settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: settings settings_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.settings
@@ -752,7 +752,7 @@ ALTER TABLE ONLY verge_customization.settings
 
 
 --
--- Name: settings settings_user_id_key_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: settings settings_user_id_key_unique; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.settings
@@ -760,7 +760,7 @@ ALTER TABLE ONLY verge_customization.settings
 
 
 --
--- Name: staff_accounts staff_accounts_owner_id_staff_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: staff_accounts staff_accounts_owner_id_staff_user_id_key; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.staff_accounts
@@ -768,7 +768,7 @@ ALTER TABLE ONLY verge_customization.staff_accounts
 
 
 --
--- Name: staff_accounts staff_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: staff_accounts staff_accounts_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.staff_accounts
@@ -776,7 +776,7 @@ ALTER TABLE ONLY verge_customization.staff_accounts
 
 
 --
--- Name: message_queue unique_wsender_message; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: message_queue unique_wsender_message; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.message_queue
@@ -784,7 +784,7 @@ ALTER TABLE ONLY verge_customization.message_queue
 
 
 --
--- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.user_roles
@@ -792,7 +792,7 @@ ALTER TABLE ONLY verge_customization.user_roles
 
 
 --
--- Name: user_roles user_roles_user_id_role_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_roles user_roles_user_id_role_key; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.user_roles
@@ -800,7 +800,7 @@ ALTER TABLE ONLY verge_customization.user_roles
 
 
 --
--- Name: user_wsender_sessions user_wsender_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_wsender_sessions user_wsender_sessions_pkey; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.user_wsender_sessions
@@ -808,7 +808,7 @@ ALTER TABLE ONLY verge_customization.user_wsender_sessions
 
 
 --
--- Name: user_wsender_sessions user_wsender_sessions_user_id_session_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_wsender_sessions user_wsender_sessions_user_id_session_id_key; Type: CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.user_wsender_sessions
@@ -816,189 +816,189 @@ ALTER TABLE ONLY verge_customization.user_wsender_sessions
 
 
 --
--- Name: contact_usage_unique_per_cycle; Type: INDEX; Schema: public; Owner: -
+-- Name: contact_usage_unique_per_cycle; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE UNIQUE INDEX contact_usage_unique_per_cycle ON verge_customization.contact_usage USING btree (user_id, phone_number, period_start);
 
 
 --
--- Name: idx_ai_usage_logs_user_created; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_ai_usage_logs_user_created; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_ai_usage_logs_user_created ON verge_customization.ai_usage_logs USING btree (user_id, created_at);
 
 
 --
--- Name: idx_contact_usage_user_created; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_contact_usage_user_created; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_contact_usage_user_created ON verge_customization.contact_usage USING btree (user_id, created_at);
 
 
 --
--- Name: idx_conversations_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_conversations_created_at; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_conversations_created_at ON verge_customization.conversations USING btree (created_at DESC);
 
 
 --
--- Name: idx_conversations_phone; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_conversations_phone; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_conversations_phone ON verge_customization.conversations USING btree (phone_number);
 
 
 --
--- Name: idx_faq_usage_logs_faq_id; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_faq_usage_logs_faq_id; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_faq_usage_logs_faq_id ON verge_customization.faq_usage_logs USING btree (faq_id);
 
 
 --
--- Name: idx_faq_usage_logs_user_phone; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_faq_usage_logs_user_phone; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_faq_usage_logs_user_phone ON verge_customization.faq_usage_logs USING btree (user_id, phone_number);
 
 
 --
--- Name: idx_leads_assigned; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_leads_assigned; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_leads_assigned ON verge_customization.leads USING btree (assigned_to);
 
 
 --
--- Name: idx_leads_user; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_leads_user; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_leads_user ON verge_customization.leads USING btree (user_id);
 
 
 --
--- Name: idx_message_queue_processed; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_message_queue_processed; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_message_queue_processed ON verge_customization.message_queue USING btree (processed_at) WHERE (status = 'done'::text);
 
 
 --
--- Name: idx_message_queue_status; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_message_queue_status; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_message_queue_status ON verge_customization.message_queue USING btree (status, created_at) WHERE (status = ANY (ARRAY['pending'::text, 'failed'::text]));
 
 
 --
--- Name: idx_message_queue_status_created; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_message_queue_status_created; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_message_queue_status_created ON verge_customization.message_queue USING btree (status, created_at) WHERE (status = ANY (ARRAY['pending'::text, 'failed'::text]));
 
 
 --
--- Name: idx_message_queue_user_processing; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_message_queue_user_processing; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_message_queue_user_processing ON verge_customization.message_queue USING btree (user_id) WHERE (status = 'processing'::text);
 
 
 --
--- Name: idx_orders_created_at; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_orders_created_at; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_orders_created_at ON verge_customization.orders USING btree (created_at DESC);
 
 
 --
--- Name: idx_orders_status; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_orders_status; Type: INDEX; Schema: verge_customization; Owner: -
 --
 
 CREATE INDEX idx_orders_status ON verge_customization.orders USING btree (status);
 
 
 --
--- Name: orders check_order_limit; Type: TRIGGER; Schema: public; Owner: -
+-- Name: orders check_order_limit; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER check_order_limit BEFORE INSERT ON verge_customization.orders FOR EACH ROW EXECUTE FUNCTION verge_customization.enforce_order_limit();
 
 
 --
--- Name: faqs update_faqs_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: faqs update_faqs_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_faqs_updated_at BEFORE UPDATE ON verge_customization.faqs FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: fcm_tokens update_fcm_tokens_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: fcm_tokens update_fcm_tokens_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_fcm_tokens_updated_at BEFORE UPDATE ON verge_customization.fcm_tokens FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: leads update_leads_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: leads update_leads_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_leads_updated_at BEFORE UPDATE ON verge_customization.leads FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: message_queue update_message_queue_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: message_queue update_message_queue_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_message_queue_updated_at BEFORE UPDATE ON verge_customization.message_queue FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: orders update_orders_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: orders update_orders_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON verge_customization.orders FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: platform_settings update_platform_settings_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: platform_settings update_platform_settings_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_platform_settings_updated_at BEFORE UPDATE ON verge_customization.platform_settings FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: products update_products_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: products update_products_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON verge_customization.products FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: profiles update_profiles_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: profiles update_profiles_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON verge_customization.profiles FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: settings update_settings_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: settings update_settings_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_settings_updated_at BEFORE UPDATE ON verge_customization.settings FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: staff_accounts update_staff_accounts_updated_at; Type: TRIGGER; Schema: public; Owner: -
+-- Name: staff_accounts update_staff_accounts_updated_at; Type: TRIGGER; Schema: verge_customization; Owner: -
 --
 
 CREATE TRIGGER update_staff_accounts_updated_at BEFORE UPDATE ON verge_customization.staff_accounts FOR EACH ROW EXECUTE FUNCTION verge_customization.update_updated_at_column();
 
 
 --
--- Name: conversations conversations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: conversations conversations_user_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.conversations
@@ -1006,7 +1006,7 @@ ALTER TABLE ONLY verge_customization.conversations
 
 
 --
--- Name: faq_usage_logs faq_usage_logs_faq_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: faq_usage_logs faq_usage_logs_faq_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.faq_usage_logs
@@ -1014,7 +1014,7 @@ ALTER TABLE ONLY verge_customization.faq_usage_logs
 
 
 --
--- Name: faqs faqs_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: faqs faqs_product_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.faqs
@@ -1022,7 +1022,7 @@ ALTER TABLE ONLY verge_customization.faqs
 
 
 --
--- Name: faqs faqs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: faqs faqs_user_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.faqs
@@ -1030,7 +1030,7 @@ ALTER TABLE ONLY verge_customization.faqs
 
 
 --
--- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.orders
@@ -1038,7 +1038,7 @@ ALTER TABLE ONLY verge_customization.orders
 
 
 --
--- Name: products products_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: products products_user_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.products
@@ -1046,7 +1046,7 @@ ALTER TABLE ONLY verge_customization.products
 
 
 --
--- Name: profiles profiles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: profiles profiles_user_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.profiles
@@ -1054,7 +1054,7 @@ ALTER TABLE ONLY verge_customization.profiles
 
 
 --
--- Name: settings settings_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: settings settings_user_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.settings
@@ -1062,7 +1062,7 @@ ALTER TABLE ONLY verge_customization.settings
 
 
 --
--- Name: staff_accounts staff_accounts_staff_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: staff_accounts staff_accounts_staff_user_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.staff_accounts
@@ -1070,7 +1070,7 @@ ALTER TABLE ONLY verge_customization.staff_accounts
 
 
 --
--- Name: user_roles user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_roles user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.user_roles
@@ -1078,7 +1078,7 @@ ALTER TABLE ONLY verge_customization.user_roles
 
 
 --
--- Name: user_wsender_sessions user_wsender_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: user_wsender_sessions user_wsender_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE ONLY verge_customization.user_wsender_sessions
@@ -1086,56 +1086,56 @@ ALTER TABLE ONLY verge_customization.user_wsender_sessions
 
 
 --
--- Name: platform_settings Authenticated users can view platform settings; Type: POLICY; Schema: public; Owner: -
+-- Name: platform_settings Authenticated users can view platform settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Authenticated users can view platform settings" ON verge_customization.platform_settings FOR SELECT USING ((auth.uid() IS NOT NULL));
 
 
 --
--- Name: staff_accounts Owners can create staff; Type: POLICY; Schema: public; Owner: -
+-- Name: staff_accounts Owners can create staff; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Owners can create staff" ON verge_customization.staff_accounts FOR INSERT WITH CHECK ((auth.uid() = owner_id));
 
 
 --
--- Name: staff_accounts Owners can delete their staff; Type: POLICY; Schema: public; Owner: -
+-- Name: staff_accounts Owners can delete their staff; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Owners can delete their staff" ON verge_customization.staff_accounts FOR DELETE USING ((auth.uid() = owner_id));
 
 
 --
--- Name: staff_accounts Owners can update their staff; Type: POLICY; Schema: public; Owner: -
+-- Name: staff_accounts Owners can update their staff; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Owners can update their staff" ON verge_customization.staff_accounts FOR UPDATE USING ((auth.uid() = owner_id));
 
 
 --
--- Name: staff_accounts Owners can view their staff; Type: POLICY; Schema: public; Owner: -
+-- Name: staff_accounts Owners can view their staff; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Owners can view their staff" ON verge_customization.staff_accounts FOR SELECT USING ((auth.uid() = owner_id));
 
 
 --
--- Name: leads Owners manage their leads; Type: POLICY; Schema: public; Owner: -
+-- Name: leads Owners manage their leads; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Owners manage their leads" ON verge_customization.leads TO authenticated USING ((auth.uid() = user_id)) WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: profiles Service can insert profiles; Type: POLICY; Schema: public; Owner: -
+-- Name: profiles Service can insert profiles; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Service can insert profiles" ON verge_customization.profiles FOR INSERT WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: conversations Staff can create owner conversations; Type: POLICY; Schema: public; Owner: -
+-- Name: conversations Staff can create owner conversations; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can create owner conversations" ON verge_customization.conversations FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
@@ -1144,7 +1144,7 @@ CREATE POLICY "Staff can create owner conversations" ON verge_customization.conv
 
 
 --
--- Name: faqs Staff can create owner faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Staff can create owner faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can create owner faqs" ON verge_customization.faqs FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
@@ -1153,7 +1153,7 @@ CREATE POLICY "Staff can create owner faqs" ON verge_customization.faqs FOR INSE
 
 
 --
--- Name: products Staff can create owner products; Type: POLICY; Schema: public; Owner: -
+-- Name: products Staff can create owner products; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can create owner products" ON verge_customization.products FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
@@ -1162,7 +1162,7 @@ CREATE POLICY "Staff can create owner products" ON verge_customization.products 
 
 
 --
--- Name: chat_takeovers Staff can manage owner takeovers; Type: POLICY; Schema: public; Owner: -
+-- Name: chat_takeovers Staff can manage owner takeovers; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can manage owner takeovers" ON verge_customization.chat_takeovers FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
@@ -1171,7 +1171,7 @@ CREATE POLICY "Staff can manage owner takeovers" ON verge_customization.chat_tak
 
 
 --
--- Name: faqs Staff can update owner faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Staff can update owner faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can update owner faqs" ON verge_customization.faqs FOR UPDATE USING ((EXISTS ( SELECT 1
@@ -1180,7 +1180,7 @@ CREATE POLICY "Staff can update owner faqs" ON verge_customization.faqs FOR UPDA
 
 
 --
--- Name: orders Staff can update owner orders; Type: POLICY; Schema: public; Owner: -
+-- Name: orders Staff can update owner orders; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can update owner orders" ON verge_customization.orders FOR UPDATE USING ((EXISTS ( SELECT 1
@@ -1189,7 +1189,7 @@ CREATE POLICY "Staff can update owner orders" ON verge_customization.orders FOR 
 
 
 --
--- Name: products Staff can update owner products; Type: POLICY; Schema: public; Owner: -
+-- Name: products Staff can update owner products; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can update owner products" ON verge_customization.products FOR UPDATE USING ((EXISTS ( SELECT 1
@@ -1198,7 +1198,7 @@ CREATE POLICY "Staff can update owner products" ON verge_customization.products 
 
 
 --
--- Name: chat_takeovers Staff can update owner takeovers; Type: POLICY; Schema: public; Owner: -
+-- Name: chat_takeovers Staff can update owner takeovers; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can update owner takeovers" ON verge_customization.chat_takeovers FOR UPDATE USING ((EXISTS ( SELECT 1
@@ -1207,14 +1207,14 @@ CREATE POLICY "Staff can update owner takeovers" ON verge_customization.chat_tak
 
 
 --
--- Name: staff_accounts Staff can view own record; Type: POLICY; Schema: public; Owner: -
+-- Name: staff_accounts Staff can view own record; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can view own record" ON verge_customization.staff_accounts FOR SELECT USING ((auth.uid() = staff_user_id));
 
 
 --
--- Name: conversations Staff can view owner conversations; Type: POLICY; Schema: public; Owner: -
+-- Name: conversations Staff can view owner conversations; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can view owner conversations" ON verge_customization.conversations FOR SELECT USING ((EXISTS ( SELECT 1
@@ -1223,7 +1223,7 @@ CREATE POLICY "Staff can view owner conversations" ON verge_customization.conver
 
 
 --
--- Name: faq_usage_logs Staff can view owner faq usage logs; Type: POLICY; Schema: public; Owner: -
+-- Name: faq_usage_logs Staff can view owner faq usage logs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can view owner faq usage logs" ON verge_customization.faq_usage_logs FOR SELECT USING ((EXISTS ( SELECT 1
@@ -1232,7 +1232,7 @@ CREATE POLICY "Staff can view owner faq usage logs" ON verge_customization.faq_u
 
 
 --
--- Name: faqs Staff can view owner faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Staff can view owner faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can view owner faqs" ON verge_customization.faqs FOR SELECT USING ((EXISTS ( SELECT 1
@@ -1241,7 +1241,7 @@ CREATE POLICY "Staff can view owner faqs" ON verge_customization.faqs FOR SELECT
 
 
 --
--- Name: orders Staff can view owner orders; Type: POLICY; Schema: public; Owner: -
+-- Name: orders Staff can view owner orders; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can view owner orders" ON verge_customization.orders FOR SELECT USING ((EXISTS ( SELECT 1
@@ -1250,7 +1250,7 @@ CREATE POLICY "Staff can view owner orders" ON verge_customization.orders FOR SE
 
 
 --
--- Name: products Staff can view owner products; Type: POLICY; Schema: public; Owner: -
+-- Name: products Staff can view owner products; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can view owner products" ON verge_customization.products FOR SELECT USING ((EXISTS ( SELECT 1
@@ -1259,7 +1259,7 @@ CREATE POLICY "Staff can view owner products" ON verge_customization.products FO
 
 
 --
--- Name: profiles Staff can view owner profile; Type: POLICY; Schema: public; Owner: -
+-- Name: profiles Staff can view owner profile; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can view owner profile" ON verge_customization.profiles FOR SELECT USING ((EXISTS ( SELECT 1
@@ -1268,7 +1268,7 @@ CREATE POLICY "Staff can view owner profile" ON verge_customization.profiles FOR
 
 
 --
--- Name: settings Staff can view owner settings; Type: POLICY; Schema: public; Owner: -
+-- Name: settings Staff can view owner settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can view owner settings" ON verge_customization.settings FOR SELECT USING ((EXISTS ( SELECT 1
@@ -1277,7 +1277,7 @@ CREATE POLICY "Staff can view owner settings" ON verge_customization.settings FO
 
 
 --
--- Name: chat_takeovers Staff can view owner takeovers; Type: POLICY; Schema: public; Owner: -
+-- Name: chat_takeovers Staff can view owner takeovers; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff can view owner takeovers" ON verge_customization.chat_takeovers FOR SELECT USING ((EXISTS ( SELECT 1
@@ -1286,544 +1286,544 @@ CREATE POLICY "Staff can view owner takeovers" ON verge_customization.chat_takeo
 
 
 --
--- Name: leads Staff insert owner leads; Type: POLICY; Schema: public; Owner: -
+-- Name: leads Staff insert owner leads; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff insert owner leads" ON verge_customization.leads FOR INSERT TO authenticated WITH CHECK (verge_customization.is_staff_of(auth.uid(), user_id));
 
 
 --
--- Name: leads Staff update owner leads; Type: POLICY; Schema: public; Owner: -
+-- Name: leads Staff update owner leads; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff update owner leads" ON verge_customization.leads FOR UPDATE TO authenticated USING (verge_customization.is_staff_of(auth.uid(), user_id)) WITH CHECK (verge_customization.is_staff_of(auth.uid(), user_id));
 
 
 --
--- Name: leads Staff view owner leads; Type: POLICY; Schema: public; Owner: -
+-- Name: leads Staff view owner leads; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Staff view owner leads" ON verge_customization.leads FOR SELECT TO authenticated USING (verge_customization.is_staff_of(auth.uid(), user_id));
 
 
 --
--- Name: faqs Super admins can delete all faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Super admins can delete all faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can delete all faqs" ON verge_customization.faqs FOR DELETE USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: platform_settings Super admins can delete platform settings; Type: POLICY; Schema: public; Owner: -
+-- Name: platform_settings Super admins can delete platform settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can delete platform settings" ON verge_customization.platform_settings FOR DELETE USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: user_roles Super admins can delete roles; Type: POLICY; Schema: public; Owner: -
+-- Name: user_roles Super admins can delete roles; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can delete roles" ON verge_customization.user_roles FOR DELETE USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: platform_settings Super admins can insert platform settings; Type: POLICY; Schema: public; Owner: -
+-- Name: platform_settings Super admins can insert platform settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can insert platform settings" ON verge_customization.platform_settings FOR INSERT WITH CHECK (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: user_roles Super admins can manage roles; Type: POLICY; Schema: public; Owner: -
+-- Name: user_roles Super admins can manage roles; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can manage roles" ON verge_customization.user_roles FOR INSERT WITH CHECK (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: faqs Super admins can update all faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Super admins can update all faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can update all faqs" ON verge_customization.faqs FOR UPDATE USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: orders Super admins can update all orders; Type: POLICY; Schema: public; Owner: -
+-- Name: orders Super admins can update all orders; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can update all orders" ON verge_customization.orders FOR UPDATE USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: profiles Super admins can update all profiles; Type: POLICY; Schema: public; Owner: -
+-- Name: profiles Super admins can update all profiles; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can update all profiles" ON verge_customization.profiles FOR UPDATE USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: settings Super admins can update all settings; Type: POLICY; Schema: public; Owner: -
+-- Name: settings Super admins can update all settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can update all settings" ON verge_customization.settings FOR UPDATE USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: platform_settings Super admins can update platform settings; Type: POLICY; Schema: public; Owner: -
+-- Name: platform_settings Super admins can update platform settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can update platform settings" ON verge_customization.platform_settings FOR UPDATE USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: user_roles Super admins can update roles; Type: POLICY; Schema: public; Owner: -
+-- Name: user_roles Super admins can update roles; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can update roles" ON verge_customization.user_roles FOR UPDATE USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: ai_usage_logs Super admins can view all ai usage logs; Type: POLICY; Schema: public; Owner: -
+-- Name: ai_usage_logs Super admins can view all ai usage logs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view all ai usage logs" ON verge_customization.ai_usage_logs FOR SELECT USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: contact_usage Super admins can view all contact usage; Type: POLICY; Schema: public; Owner: -
+-- Name: contact_usage Super admins can view all contact usage; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view all contact usage" ON verge_customization.contact_usage FOR SELECT TO authenticated USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: conversations Super admins can view all conversations; Type: POLICY; Schema: public; Owner: -
+-- Name: conversations Super admins can view all conversations; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view all conversations" ON verge_customization.conversations FOR SELECT USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: faqs Super admins can view all faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Super admins can view all faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view all faqs" ON verge_customization.faqs FOR SELECT USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: orders Super admins can view all orders; Type: POLICY; Schema: public; Owner: -
+-- Name: orders Super admins can view all orders; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view all orders" ON verge_customization.orders FOR SELECT USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: profiles Super admins can view all profiles; Type: POLICY; Schema: public; Owner: -
+-- Name: profiles Super admins can view all profiles; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view all profiles" ON verge_customization.profiles FOR SELECT USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: user_wsender_sessions Super admins can view all sessions; Type: POLICY; Schema: public; Owner: -
+-- Name: user_wsender_sessions Super admins can view all sessions; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view all sessions" ON verge_customization.user_wsender_sessions FOR SELECT USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: settings Super admins can view all settings; Type: POLICY; Schema: public; Owner: -
+-- Name: settings Super admins can view all settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view all settings" ON verge_customization.settings FOR SELECT USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: staff_accounts Super admins can view all staff; Type: POLICY; Schema: public; Owner: -
+-- Name: staff_accounts Super admins can view all staff; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view all staff" ON verge_customization.staff_accounts FOR SELECT USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: platform_settings Super admins can view platform settings; Type: POLICY; Schema: public; Owner: -
+-- Name: platform_settings Super admins can view platform settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins can view platform settings" ON verge_customization.platform_settings FOR SELECT USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: leads Super admins view all leads; Type: POLICY; Schema: public; Owner: -
+-- Name: leads Super admins view all leads; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Super admins view all leads" ON verge_customization.leads FOR SELECT TO authenticated USING (verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role));
 
 
 --
--- Name: conversations Users can create own conversations; Type: POLICY; Schema: public; Owner: -
+-- Name: conversations Users can create own conversations; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can create own conversations" ON verge_customization.conversations FOR INSERT WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: faqs Users can create own faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Users can create own faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can create own faqs" ON verge_customization.faqs FOR INSERT WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: orders Users can create own orders; Type: POLICY; Schema: public; Owner: -
+-- Name: orders Users can create own orders; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can create own orders" ON verge_customization.orders FOR INSERT WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: products Users can create own products; Type: POLICY; Schema: public; Owner: -
+-- Name: products Users can create own products; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can create own products" ON verge_customization.products FOR INSERT WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: user_wsender_sessions Users can create own sessions; Type: POLICY; Schema: public; Owner: -
+-- Name: user_wsender_sessions Users can create own sessions; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can create own sessions" ON verge_customization.user_wsender_sessions FOR INSERT WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: settings Users can create own settings; Type: POLICY; Schema: public; Owner: -
+-- Name: settings Users can create own settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can create own settings" ON verge_customization.settings FOR INSERT WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: conversations Users can delete own conversations; Type: POLICY; Schema: public; Owner: -
+-- Name: conversations Users can delete own conversations; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can delete own conversations" ON verge_customization.conversations FOR DELETE USING ((auth.uid() = user_id));
 
 
 --
--- Name: faqs Users can delete own faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Users can delete own faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can delete own faqs" ON verge_customization.faqs FOR DELETE USING ((auth.uid() = user_id));
 
 
 --
--- Name: orders Users can delete own orders; Type: POLICY; Schema: public; Owner: -
+-- Name: orders Users can delete own orders; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can delete own orders" ON verge_customization.orders FOR DELETE USING ((auth.uid() = user_id));
 
 
 --
--- Name: products Users can delete own products; Type: POLICY; Schema: public; Owner: -
+-- Name: products Users can delete own products; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can delete own products" ON verge_customization.products FOR DELETE USING ((auth.uid() = user_id));
 
 
 --
--- Name: user_wsender_sessions Users can delete own sessions; Type: POLICY; Schema: public; Owner: -
+-- Name: user_wsender_sessions Users can delete own sessions; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can delete own sessions" ON verge_customization.user_wsender_sessions FOR DELETE USING ((auth.uid() = user_id));
 
 
 --
--- Name: settings Users can delete own settings; Type: POLICY; Schema: public; Owner: -
+-- Name: settings Users can delete own settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can delete own settings" ON verge_customization.settings FOR DELETE USING ((auth.uid() = user_id));
 
 
 --
--- Name: fcm_tokens Users can delete own tokens; Type: POLICY; Schema: public; Owner: -
+-- Name: fcm_tokens Users can delete own tokens; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can delete own tokens" ON verge_customization.fcm_tokens FOR DELETE USING ((auth.uid() = user_id));
 
 
 --
--- Name: chat_takeovers Users can delete their own takeovers; Type: POLICY; Schema: public; Owner: -
+-- Name: chat_takeovers Users can delete their own takeovers; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can delete their own takeovers" ON verge_customization.chat_takeovers FOR DELETE USING ((auth.uid() = user_id));
 
 
 --
--- Name: fcm_tokens Users can insert own tokens; Type: POLICY; Schema: public; Owner: -
+-- Name: fcm_tokens Users can insert own tokens; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can insert own tokens" ON verge_customization.fcm_tokens FOR INSERT WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: chat_takeovers Users can insert their own takeovers; Type: POLICY; Schema: public; Owner: -
+-- Name: chat_takeovers Users can insert their own takeovers; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can insert their own takeovers" ON verge_customization.chat_takeovers FOR INSERT WITH CHECK ((auth.uid() = user_id));
 
 
 --
--- Name: conversations Users can update own conversations; Type: POLICY; Schema: public; Owner: -
+-- Name: conversations Users can update own conversations; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can update own conversations" ON verge_customization.conversations FOR UPDATE USING ((auth.uid() = user_id));
 
 
 --
--- Name: faqs Users can update own faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Users can update own faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can update own faqs" ON verge_customization.faqs FOR UPDATE USING ((auth.uid() = user_id));
 
 
 --
--- Name: orders Users can update own orders; Type: POLICY; Schema: public; Owner: -
+-- Name: orders Users can update own orders; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can update own orders" ON verge_customization.orders FOR UPDATE USING ((auth.uid() = user_id));
 
 
 --
--- Name: products Users can update own products; Type: POLICY; Schema: public; Owner: -
+-- Name: products Users can update own products; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can update own products" ON verge_customization.products FOR UPDATE USING ((auth.uid() = user_id));
 
 
 --
--- Name: user_wsender_sessions Users can update own sessions; Type: POLICY; Schema: public; Owner: -
+-- Name: user_wsender_sessions Users can update own sessions; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can update own sessions" ON verge_customization.user_wsender_sessions FOR UPDATE USING ((auth.uid() = user_id));
 
 
 --
--- Name: settings Users can update own settings; Type: POLICY; Schema: public; Owner: -
+-- Name: settings Users can update own settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can update own settings" ON verge_customization.settings FOR UPDATE USING ((auth.uid() = user_id));
 
 
 --
--- Name: fcm_tokens Users can update own tokens; Type: POLICY; Schema: public; Owner: -
+-- Name: fcm_tokens Users can update own tokens; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can update own tokens" ON verge_customization.fcm_tokens FOR UPDATE USING ((auth.uid() = user_id));
 
 
 --
--- Name: profiles Users can update their own profile; Type: POLICY; Schema: public; Owner: -
+-- Name: profiles Users can update their own profile; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can update their own profile" ON verge_customization.profiles FOR UPDATE USING ((auth.uid() = user_id));
 
 
 --
--- Name: chat_takeovers Users can update their own takeovers; Type: POLICY; Schema: public; Owner: -
+-- Name: chat_takeovers Users can update their own takeovers; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can update their own takeovers" ON verge_customization.chat_takeovers FOR UPDATE USING ((auth.uid() = user_id));
 
 
 --
--- Name: ai_usage_logs Users can view own ai usage logs; Type: POLICY; Schema: public; Owner: -
+-- Name: ai_usage_logs Users can view own ai usage logs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own ai usage logs" ON verge_customization.ai_usage_logs FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: contact_usage Users can view own contact usage; Type: POLICY; Schema: public; Owner: -
+-- Name: contact_usage Users can view own contact usage; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own contact usage" ON verge_customization.contact_usage FOR SELECT TO authenticated USING (((auth.uid() = user_id) OR verge_customization.is_staff_of(auth.uid(), user_id)));
 
 
 --
--- Name: conversations Users can view own conversations; Type: POLICY; Schema: public; Owner: -
+-- Name: conversations Users can view own conversations; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own conversations" ON verge_customization.conversations FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: faq_usage_logs Users can view own faq usage logs; Type: POLICY; Schema: public; Owner: -
+-- Name: faq_usage_logs Users can view own faq usage logs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own faq usage logs" ON verge_customization.faq_usage_logs FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: faqs Users can view own faqs; Type: POLICY; Schema: public; Owner: -
+-- Name: faqs Users can view own faqs; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own faqs" ON verge_customization.faqs FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: orders Users can view own orders; Type: POLICY; Schema: public; Owner: -
+-- Name: orders Users can view own orders; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own orders" ON verge_customization.orders FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: products Users can view own products; Type: POLICY; Schema: public; Owner: -
+-- Name: products Users can view own products; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own products" ON verge_customization.products FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: user_roles Users can view own roles; Type: POLICY; Schema: public; Owner: -
+-- Name: user_roles Users can view own roles; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own roles" ON verge_customization.user_roles FOR SELECT USING (((auth.uid() = user_id) OR verge_customization.has_role(auth.uid(), 'super_admin'::verge_customization.app_role)));
 
 
 --
--- Name: user_wsender_sessions Users can view own sessions; Type: POLICY; Schema: public; Owner: -
+-- Name: user_wsender_sessions Users can view own sessions; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own sessions" ON verge_customization.user_wsender_sessions FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: settings Users can view own settings; Type: POLICY; Schema: public; Owner: -
+-- Name: settings Users can view own settings; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own settings" ON verge_customization.settings FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: fcm_tokens Users can view own tokens; Type: POLICY; Schema: public; Owner: -
+-- Name: fcm_tokens Users can view own tokens; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view own tokens" ON verge_customization.fcm_tokens FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: profiles Users can view their own profile; Type: POLICY; Schema: public; Owner: -
+-- Name: profiles Users can view their own profile; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view their own profile" ON verge_customization.profiles FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: chat_takeovers Users can view their own takeovers; Type: POLICY; Schema: public; Owner: -
+-- Name: chat_takeovers Users can view their own takeovers; Type: POLICY; Schema: verge_customization; Owner: -
 --
 
 CREATE POLICY "Users can view their own takeovers" ON verge_customization.chat_takeovers FOR SELECT USING ((auth.uid() = user_id));
 
 
 --
--- Name: ai_usage_logs; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: ai_usage_logs; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.ai_usage_logs ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: chat_takeovers; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: chat_takeovers; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.chat_takeovers ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: contact_usage; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: contact_usage; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.contact_usage ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: conversations; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: conversations; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.conversations ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: faq_usage_logs; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: faq_usage_logs; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.faq_usage_logs ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: faqs; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: faqs; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.faqs ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: fcm_tokens; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: fcm_tokens; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.fcm_tokens ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: leads; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: leads; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.leads ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: message_queue; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: message_queue; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.message_queue ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: orders; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: orders; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.orders ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: platform_settings; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: platform_settings; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.platform_settings ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: products; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: products; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.products ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: profiles; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: profiles; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.profiles ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: settings; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: settings; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.settings ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: staff_accounts; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: staff_accounts; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.staff_accounts ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: user_roles; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: user_roles; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.user_roles ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: user_wsender_sessions; Type: ROW SECURITY; Schema: public; Owner: -
+-- Name: user_wsender_sessions; Type: ROW SECURITY; Schema: verge_customization; Owner: -
 --
 
 ALTER TABLE verge_customization.user_wsender_sessions ENABLE ROW LEVEL SECURITY;
@@ -1839,7 +1839,7 @@ GRANT USAGE ON SCHEMA verge_customization TO service_role;
 
 
 --
--- Name: FUNCTION can_read_usage(_user_id uuid); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION can_read_usage(_user_id uuid); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.can_read_usage(_user_id uuid) TO anon;
@@ -1848,7 +1848,7 @@ GRANT ALL ON FUNCTION verge_customization.can_read_usage(_user_id uuid) TO servi
 
 
 --
--- Name: FUNCTION enforce_order_limit(); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION enforce_order_limit(); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.enforce_order_limit() TO anon;
@@ -1857,7 +1857,7 @@ GRANT ALL ON FUNCTION verge_customization.enforce_order_limit() TO service_role;
 
 
 --
--- Name: FUNCTION get_ai_message_usage(_user_id uuid, _since timestamp with time zone); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION get_ai_message_usage(_user_id uuid, _since timestamp with time zone); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.get_ai_message_usage(_user_id uuid, _since timestamp with time zone) TO anon;
@@ -1866,7 +1866,7 @@ GRANT ALL ON FUNCTION verge_customization.get_ai_message_usage(_user_id uuid, _s
 
 
 --
--- Name: FUNCTION get_contact_usage(_user_id uuid, _since timestamp with time zone); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION get_contact_usage(_user_id uuid, _since timestamp with time zone); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.get_contact_usage(_user_id uuid, _since timestamp with time zone) TO anon;
@@ -1875,7 +1875,7 @@ GRANT ALL ON FUNCTION verge_customization.get_contact_usage(_user_id uuid, _sinc
 
 
 --
--- Name: FUNCTION get_staff_owner_id(_user_id uuid); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION get_staff_owner_id(_user_id uuid); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.get_staff_owner_id(_user_id uuid) TO anon;
@@ -1884,7 +1884,7 @@ GRANT ALL ON FUNCTION verge_customization.get_staff_owner_id(_user_id uuid) TO s
 
 
 --
--- Name: FUNCTION handle_new_user(); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION handle_new_user(); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.handle_new_user() TO anon;
@@ -1893,7 +1893,7 @@ GRANT ALL ON FUNCTION verge_customization.handle_new_user() TO service_role;
 
 
 --
--- Name: FUNCTION handle_new_user_role(); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION handle_new_user_role(); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.handle_new_user_role() TO anon;
@@ -1902,7 +1902,7 @@ GRANT ALL ON FUNCTION verge_customization.handle_new_user_role() TO service_role
 
 
 --
--- Name: FUNCTION handle_new_user_settings(); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION handle_new_user_settings(); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.handle_new_user_settings() TO anon;
@@ -1911,7 +1911,7 @@ GRANT ALL ON FUNCTION verge_customization.handle_new_user_settings() TO service_
 
 
 --
--- Name: FUNCTION has_role(_user_id uuid, _role verge_customization.app_role); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION has_role(_user_id uuid, _role verge_customization.app_role); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.has_role(_user_id uuid, _role verge_customization.app_role) TO anon;
@@ -1920,7 +1920,7 @@ GRANT ALL ON FUNCTION verge_customization.has_role(_user_id uuid, _role verge_cu
 
 
 --
--- Name: FUNCTION is_admin(); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION is_admin(); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.is_admin() TO anon;
@@ -1929,7 +1929,7 @@ GRANT ALL ON FUNCTION verge_customization.is_admin() TO service_role;
 
 
 --
--- Name: FUNCTION is_staff_of(_staff_user_id uuid, _owner_id uuid); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION is_staff_of(_staff_user_id uuid, _owner_id uuid); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.is_staff_of(_staff_user_id uuid, _owner_id uuid) TO anon;
@@ -1938,7 +1938,7 @@ GRANT ALL ON FUNCTION verge_customization.is_staff_of(_staff_user_id uuid, _owne
 
 
 --
--- Name: FUNCTION update_updated_at_column(); Type: ACL; Schema: public; Owner: -
+-- Name: FUNCTION update_updated_at_column(); Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON FUNCTION verge_customization.update_updated_at_column() TO anon;
@@ -1947,7 +1947,7 @@ GRANT ALL ON FUNCTION verge_customization.update_updated_at_column() TO service_
 
 
 --
--- Name: TABLE ai_usage_logs; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE ai_usage_logs; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.ai_usage_logs TO anon;
@@ -1956,7 +1956,7 @@ GRANT ALL ON TABLE verge_customization.ai_usage_logs TO service_role;
 
 
 --
--- Name: TABLE chat_takeovers; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE chat_takeovers; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.chat_takeovers TO anon;
@@ -1965,7 +1965,7 @@ GRANT ALL ON TABLE verge_customization.chat_takeovers TO service_role;
 
 
 --
--- Name: TABLE contact_usage; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE contact_usage; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.contact_usage TO anon;
@@ -1974,7 +1974,7 @@ GRANT ALL ON TABLE verge_customization.contact_usage TO service_role;
 
 
 --
--- Name: TABLE conversations; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE conversations; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.conversations TO anon;
@@ -1983,7 +1983,7 @@ GRANT ALL ON TABLE verge_customization.conversations TO service_role;
 
 
 --
--- Name: TABLE faq_usage_logs; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE faq_usage_logs; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.faq_usage_logs TO anon;
@@ -1992,7 +1992,7 @@ GRANT ALL ON TABLE verge_customization.faq_usage_logs TO service_role;
 
 
 --
--- Name: TABLE faqs; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE faqs; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.faqs TO anon;
@@ -2001,7 +2001,7 @@ GRANT ALL ON TABLE verge_customization.faqs TO service_role;
 
 
 --
--- Name: TABLE fcm_tokens; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE fcm_tokens; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.fcm_tokens TO anon;
@@ -2010,7 +2010,7 @@ GRANT ALL ON TABLE verge_customization.fcm_tokens TO service_role;
 
 
 --
--- Name: TABLE leads; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE leads; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.leads TO anon;
@@ -2019,7 +2019,7 @@ GRANT ALL ON TABLE verge_customization.leads TO service_role;
 
 
 --
--- Name: TABLE message_queue; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE message_queue; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.message_queue TO anon;
@@ -2028,7 +2028,7 @@ GRANT ALL ON TABLE verge_customization.message_queue TO service_role;
 
 
 --
--- Name: TABLE orders; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE orders; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.orders TO anon;
@@ -2037,7 +2037,7 @@ GRANT ALL ON TABLE verge_customization.orders TO service_role;
 
 
 --
--- Name: TABLE platform_settings; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE platform_settings; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.platform_settings TO anon;
@@ -2046,7 +2046,7 @@ GRANT ALL ON TABLE verge_customization.platform_settings TO service_role;
 
 
 --
--- Name: TABLE products; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE products; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.products TO anon;
@@ -2055,7 +2055,7 @@ GRANT ALL ON TABLE verge_customization.products TO service_role;
 
 
 --
--- Name: TABLE profiles; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE profiles; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.profiles TO anon;
@@ -2064,7 +2064,7 @@ GRANT ALL ON TABLE verge_customization.profiles TO service_role;
 
 
 --
--- Name: TABLE settings; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE settings; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.settings TO anon;
@@ -2073,7 +2073,7 @@ GRANT ALL ON TABLE verge_customization.settings TO service_role;
 
 
 --
--- Name: TABLE staff_accounts; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE staff_accounts; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.staff_accounts TO anon;
@@ -2082,7 +2082,7 @@ GRANT ALL ON TABLE verge_customization.staff_accounts TO service_role;
 
 
 --
--- Name: TABLE user_roles; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE user_roles; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.user_roles TO anon;
@@ -2091,7 +2091,7 @@ GRANT ALL ON TABLE verge_customization.user_roles TO service_role;
 
 
 --
--- Name: TABLE user_wsender_sessions; Type: ACL; Schema: public; Owner: -
+-- Name: TABLE user_wsender_sessions; Type: ACL; Schema: verge_customization; Owner: -
 --
 
 GRANT ALL ON TABLE verge_customization.user_wsender_sessions TO anon;
@@ -2100,37 +2100,37 @@ GRANT ALL ON TABLE verge_customization.user_wsender_sessions TO service_role;
 
 
 --
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: -
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: verge_customization; Owner: -
 --
 
 
 
 --
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: -
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: verge_customization; Owner: -
 --
 
 
 
 --
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: public; Owner: -
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: verge_customization; Owner: -
 --
 
 
 
 --
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: public; Owner: -
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: verge_customization; Owner: -
 --
 
 
 
 --
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: -
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: verge_customization; Owner: -
 --
 
 
 
 --
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: -
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: verge_customization; Owner: -
 --
 
 
