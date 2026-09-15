@@ -509,6 +509,7 @@ CREATE TABLE verge_customization.products (
     user_id uuid NOT NULL,
     delivery_price numeric DEFAULT 0,
     video_url text,
+    size_chart_url text
     CONSTRAINT products_product_type_check CHECK ((product_type = ANY (ARRAY['physical'::text, 'digital'::text])))
 );
 
