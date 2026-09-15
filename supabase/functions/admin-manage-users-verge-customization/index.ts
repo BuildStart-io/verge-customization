@@ -28,18 +28,18 @@ serve(async (req) => {
 
     const token = authHeader.replace("Bearer ", "");
 
-    // Use getClaims for JWT validation (works with ES256 signing on Lovable Cloud)
+    // Use getUser for JWT validation (standard Supabase JS method)
     const authClient = createClient(supabaseUrl, supabaseAnonKey, { db: { schema: "verge_customization" }, global: { headers: { Authorization: authHeader } },
     });
-    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims?.sub) {
-      console.error("Auth error:", claimsError?.message);
+    const { data: userData, error: userError } = await authClient.auth.getUser(token);
+    if (userError || !userData?.user?.id) {
+      console.error("Auth error:", userError?.message);
       return new Response(JSON.stringify({ error: "Invalid token" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const caller = { id: claimsData.claims.sub as string };
+    const caller = { id: userData.user.id };
 
     // Check super_admin role
     const { data: roleData } = await supabase
