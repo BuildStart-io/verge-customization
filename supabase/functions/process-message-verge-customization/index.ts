@@ -307,6 +307,7 @@ async function processMessage(
 
   const replyMessage = aiData.response;
   const replyImageUrls: string[] = Array.isArray(aiData.imageUrls) && aiData.imageUrls.length > 0 ? aiData.imageUrls : (aiData.imageUrl ? [aiData.imageUrl] : []);
+  const shownProducts: string[] = Array.isArray(aiData.shownProducts) ? aiData.shownProducts : [];
   const replyVideoUrl = aiData.videoUrl || null;
   const followupMessage = aiData.followupMessage || null;
   const faqMedia: string[] = Array.isArray(aiData.faqMedia) ? aiData.faqMedia : [];
@@ -315,6 +316,9 @@ async function processMessage(
   let storedMessage = replyMessage || "";
   for (const url of replyImageUrls) {
     storedMessage += `\n[System Note: Sent product image ${url} to customer]`;
+  }
+  for (const prod of shownProducts) {
+    storedMessage += `\n[System Note: Sent images for product ${prod} to customer]`;
   }
   if (replyVideoUrl) storedMessage += `\n[System Note: Sent product video ${replyVideoUrl} to customer]`;
 
