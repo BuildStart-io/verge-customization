@@ -459,14 +459,23 @@ async function sendWhatsApp(
   const body: any = { to, message, sessionApiKey };
   if (imageUrl) body.imageUrl = imageUrl;
 
-  const res = await fetch(`${supabaseUrl}/functions/v1/send-whatsapp-verge-customization`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${supabaseServiceKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
+  let res: Response;
+  try {
+    res = await fetch(`${supabaseUrl}/functions/v1/send-whatsapp-verge-customization`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${supabaseServiceKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!res.ok) {
     const errText = await res.text();
@@ -514,11 +523,20 @@ export function cycleStart(billingCycleStart: string | null | undefined): string
     return d.toISOString();
   }
   const now = new Date();
-  const current = new Date(billingCycleStart);
+  let current = new Date(billingCycleStart);
+  if (isNaN(current.getTime())) {
+    current = new Date(billingCycleStart.replace(" ", "T"));
+  }
+  if (isNaN(current.getTime())) {
+    current = new Date();
+    current.setDate(1);
+    current.setHours(0, 0, 0, 0);
+  }
+  let loops = 0;
   while (true) {
     const next = new Date(current);
     next.setMonth(next.getMonth() + 1);
-    if (next > now) break;
+    if (next > now || loops++ > 240) break;
     current.setTime(next.getTime());
   }
   return current.toISOString();

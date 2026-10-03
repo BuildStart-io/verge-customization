@@ -43,15 +43,23 @@ function filenameFromUrl(url: string): string {
 
 async function wahaFetch(path: string, body: any) {
   if (!WAHA_BASE) throw new Error("WAHA_BASE_URL not configured");
-  return fetch(`${WAHA_BASE}${path}`, {
-    method: "POST",
-    headers: {
-      "X-Api-Key": WAHA_KEY,
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20_000);
+  try {
+    const res = await fetch(`${WAHA_BASE}${path}`, {
+      method: "POST",
+      headers: {
+        "X-Api-Key": WAHA_KEY,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    return res;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 serve(async (req) => {
